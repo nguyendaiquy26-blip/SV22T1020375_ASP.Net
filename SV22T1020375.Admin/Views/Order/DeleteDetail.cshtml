@@ -1,0 +1,35 @@
+﻿@model SV22T1020375.Models.Sales.OrderDetailViewInfo
+@{
+    Layout = null;
+}
+<div class="modal-header text-bg-danger">
+    <strong class="modal-title">
+        Xóa mặt hàng khỏi đơn hàng
+    </strong>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+    <form method="post" action="~/Order/DeleteDetail" id="formDeleteDetail">
+        <input type="hidden" name="orderID" value="@Model.OrderID" />
+        <input type="hidden" name="productID" value="@Model.ProductID" />
+
+        <div class="alert alert-danger d-flex align-items-center">
+            <i class="bi bi-info-circle me-2"></i>
+            Bạn có muốn xóa mặt hàng <strong>@Model.ProductName</strong> ra khỏi đơn hàng không?
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="submit"
+            class="btn btn-primary"
+            form="formDeleteDetail">
+        <i class="bi bi-check"></i> Chấp nhận
+    </button>
+    <button type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">
+        Đóng
+    </button>
+</div>

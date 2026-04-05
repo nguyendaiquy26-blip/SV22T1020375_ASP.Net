@@ -1,0 +1,164 @@
+@model IEnumerable<SV22T1020375.Models.Product>
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="p-5 mb-4 text-white rounded-3 shadow-sm position-relative overflow-hidden" style="background: linear-gradient(135deg, #0d6efd, #0dcaf0);">
+    <div class="container-fluid py-3 position-relative" style="z-index: 2;">
+        <h1 class="display-5 fw-bold"><i class="fa fa-bolt text-warning"></i> Siêu Sale Công Nghệ</h1>
+        <p class="col-md-8 fs-4 mb-0">Săn deal giá sốc, hàng chính hãng, giao hàng siêu tốc tận nơi.</p>
+    </div>
+    <i class="fa fa-laptop position-absolute text-white" style="font-size: 15rem; opacity: 0.1; right: 5%; top: -20%;"></i>
+</div>
+
+<div class="row g-4 mt-2">
+    <div class="col-lg-3">
+        <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
+            <div class="card-header bg-white fw-bold text-uppercase border-bottom-0 pt-3">
+                <i class="fa fa-filter text-primary me-2"></i> Lọc tìm kiếm
+            </div>
+            <div class="card-body">
+                <form action="/Home/Index" method="get">
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Tên sản phẩm</label>
+                        <input type="text" class="form-control bg-light border-0" name="searchValue" value="@ViewBag.SearchValue" placeholder="Nhập tên mặt hàng...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Danh mục hàng</label>
+                        <select class="form-select bg-light border-0" name="categoryID">
+                            <option value="0">-- Tất cả danh mục --</option>
+                            @foreach (var item in SV22T1020375.BusinessLayers.CommonDataService.ListOfCategories())
+                            {
+                                <option value="@item.CategoryID" selected="@(ViewBag.CategoryID == item.CategoryID ? "selected" : null)">@item.CategoryName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-secondary">Khoảng giá (VNĐ)</label>
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text bg-light border-0">Từ</span>
+                            <input type="number" class="form-control bg-light border-0" name="minPrice" value="@(ViewBag.MinPrice > 0 ? ViewBag.MinPrice : "")" placeholder="0">
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light border-0">Đến</span>
+                            <input type="number" class="form-control bg-light border-0" name="maxPrice" value="@(ViewBag.MaxPrice > 0 ? ViewBag.MaxPrice : "")" placeholder="0">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">ÁP DỤNG BỘ LỌC</button>
+                    <a href="/Home/Index" class="btn btn-light w-100 mt-2 text-muted small">Xóa bộ lọc</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <h4 class="fw-bold mb-4 pb-2 border-bottom">Danh sách sản phẩm</h4>
+
+        <div class="row g-3">
+            @if (Model == null || !Model.Any())
+            {
+                <div class="col-12 text-center py-5">
+                    <i class="fa fa-box-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Không tìm thấy sản phẩm phù hợp.</h5>
+                </div>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card h-100 shadow-sm border-0 product-card">
+                            @{
+                                string imagePath = string.IsNullOrEmpty(item.Photo) ? "macbook.png" : item.Photo;
+                            }
+                            <div class="p-3 text-center" style="height: 220px;">
+                                <img src="@Configuration["WebSiteUrl"]/images/products/@imagePath" class="img-fluid h-100" style="object-fit: contain;" alt="@item.ProductName" onerror="this.src='/images/nophoto.png'">
+                            </div>
+                            <div class="card-body d-flex flex-column border-top bg-white">
+                                <h6 class="card-title text-truncate" title="@item.ProductName">@item.ProductName</h6>
+                                <h5 class="text-danger fw-bold mt-auto mb-3">@item.Price.ToString("N0") đ</h5>
+
+                                <a href="/Product/Details/@item.ProductID" class="btn btn-outline-primary btn-sm mt-auto">
+                                    <i class="fa fa-cart-plus"></i> Chọn mua
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        @if (ViewBag.TotalPages > 1)
+        {
+            <div class="d-flex justify-content-center mt-5 mb-4">
+                <ul class="pagination shadow-sm">
+                    @{
+                        int currentPage = ViewBag.CurrentPage;
+                        int totalPages = ViewBag.TotalPages;
+
+                        // Hiển thị 2 trang xung quanh trang hiện tại
+                        int window = 2;
+                        int startPage = Math.Max(1, currentPage - window);
+                        int endPage = Math.Min(totalPages, currentPage + window);
+
+                        string searchParams = $"&searchValue={ViewBag.SearchValue}&categoryID={ViewBag.CategoryID}&minPrice={ViewBag.MinPrice}&maxPrice={ViewBag.MaxPrice}";
+                    }
+
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link px-3" href="/Home/Index?page=@(currentPage - 1)@searchParams">
+                            <i class="fa fa-angle-left"></i> Trước
+                        </a>
+                    </li>
+
+                    @if (startPage > 1)
+                    {
+                        <li class="page-item"><a class="page-link" href="/Home/Index?page=1@searchParams">1</a></li>
+                        @if (startPage > 2)
+                        {
+                            <li class="page-item disabled"><span class="page-link text-muted">...</span></li>
+                        }
+                    }
+
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link" href="/Home/Index?page=@i@searchParams">@i</a>
+                        </li>
+                    }
+
+                    @if (endPage < totalPages)
+                    {
+                        @if (endPage < totalPages - 1)
+                        {
+                            <li class="page-item disabled"><span class="page-link text-muted">...</span></li>
+                        }
+                        <li class="page-item"><a class="page-link" href="/Home/Index?page=@totalPages@searchParams">@totalPages</a></li>
+                    }
+
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link px-3" href="/Home/Index?page=@(currentPage + 1)@searchParams">
+                            Sau <i class="fa fa-angle-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .product-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+        }
+</style>

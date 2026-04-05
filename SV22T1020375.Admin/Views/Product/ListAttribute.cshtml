@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "Thuộc tính sản phẩm";
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <a href="~/Product/AddAttribute/1"
+           class="btn btn-success">
+            <i class="bi bi-plus-circle"></i>
+            Thêm thuộc tính
+        </a>
+
+        <a href="~/Product"
+           class="btn btn-secondary ms-2">
+            <i class="bi bi-arrow-left"></i>
+            Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body table-responsive p-0">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-secondary">
+                <tr>
+                    <th>Tên thuộc tính</th>
+                    <th>Giá trị</th>
+                    <th class="text-center" style="width:150px">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Màu sắc</td>
+                    <td>Đen</td>
+                    <td class="text-center">
+                        <a href="~/Product/EditAttribute/1?attribute=1"
+                           class="btn btn-sm btn-primary">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="~/Product/DeleteAttribute/1?attribute=1"
+                           class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Bộ nhớ</td>
+                    <td>256GB</td>
+                    <td class="text-center">
+                        <a href="~/Product/EditAttribute/1?attribute=2"
+                           class="btn btn-sm btn-primary">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="~/Product/DeleteAttribute/1?attribute=2"
+                           class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "Hình ảnh sản phẩm";
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            <div class="input-group">
+                <input type="file"
+                       name="photo"
+                       class="form-control">
+
+                <button class="btn btn-primary">
+                    <i class="bi bi-upload"></i>
+                    Tải ảnh
+                </button>
+
+                <a href="~/Product"
+                   class="btn btn-secondary ms-2">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card">
+            <img src="https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6504/6504816_sd.jpg"
+                 class="card-img-top">
+            <div class="card-body text-center">
+                <a href="#" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i>
+                    Xóa
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card">
+            <img src="https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6504/6504812_sd.jpg"
+                 class="card-img-top">
+            <div class="card-body text-center">
+                <a href="#" class="btn btn-sm btn-danger">
+                    <i class="bi bi-trash"></i>
+                    Xóa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

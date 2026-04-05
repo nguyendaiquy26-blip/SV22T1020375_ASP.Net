@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 rounded-4" data-aos="fade-up">
+                <div class="card-body p-5">
+                    <h3 class="text-center mb-4 fw-bold" style="color: var(--primary-color);">Đăng nhập</h3>
+                    
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger mb-0" })
+                        </div>
+                    }
+
+                    <form asp-controller="Account" asp-action="Login" method="post">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email đăng nhập</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-regular fa-envelope text-muted"></i></span>
+                                <input type="email" name="username" class="form-control bg-light border-start-0" placeholder="Nhập email của bạn" required autofocus>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Mật khẩu</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-lock text-muted"></i></span>
+                                <input type="password" name="password" class="form-control bg-light border-start-0" placeholder="Nhập mật khẩu" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 py-2 fw-bold text-dark rounded-pill mb-3">
+                            Đăng nhập
+                        </button>
+                        <div class="text-center text-muted">
+                            Chưa có tài khoản? <a asp-controller="Account" asp-action="Register" class="text-decoration-none fw-bold" style="color: var(--primary-color);">Đăng ký ngay</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

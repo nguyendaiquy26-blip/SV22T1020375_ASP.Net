@@ -1,0 +1,200 @@
+@using SV22T1020375.Models.Common
+@model PagedResult<SV22T1020375.Models.Product>
+
+@{
+    ViewData["Title"] = "Danh mục sản phẩm";
+    var categories = ViewBag.Categories as List<SV22T1020375.Models.Catalog.Category>;
+
+    var searchInput = new SV22T1020375.Models.Catalog.ProductSearchInput
+    {
+        Page = Model.Page,
+        SearchValue = ViewContext.HttpContext.Request.Query["searchValue"].ToString(),
+        CategoryID = int.TryParse(ViewContext.HttpContext.Request.Query["categoryId"], out int cid) ? cid : 0,
+        MinPrice = decimal.TryParse(ViewContext.HttpContext.Request.Query["minPrice"], out decimal mp1) ? mp1 : 0,
+        MaxPrice = decimal.TryParse(ViewContext.HttpContext.Request.Query["maxPrice"], out decimal mp2) ? mp2 : 0
+    };
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+            <li class="breadcrumb-item active fw-bold" style="color: var(--primary-color);" aria-current="page">Sản phẩm</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm border-0 rounded-4 sticky-top" style="top: 90px; z-index: 10;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4"><i class="fa-solid fa-filter me-2 text-warning"></i> Bộ lọc</h5>
+
+                    <form asp-controller="Product" asp-action="Index" method="get">
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Tìm kiếm</label>
+                            <div class="input-group">
+                                <input type="text" name="searchValue" class="form-control bg-light border-0" placeholder="Tên sản phẩm..." value="@searchInput.SearchValue">
+                                <button class="btn btn-warning text-dark" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Danh mục</label>
+                            <select name="categoryId" class="form-select bg-light border-0">
+                                <option value="0">--- Tất cả danh mục ---</option>
+                                @if (categories != null)
+                                {
+                                    foreach (var item in categories)
+                                    {
+                                        if (item.CategoryID == searchInput.CategoryID)
+                                        {
+                                            <option value="@item.CategoryID" selected>@item.CategoryName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.CategoryID">@item.CategoryName</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Khoảng giá</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" name="minPrice" class="form-control bg-light border-0 text-center" placeholder="Từ" value="@(searchInput.MinPrice > 0 ? searchInput.MinPrice.ToString() : "")">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="maxPrice" class="form-control bg-light border-0 text-center" placeholder="Đến" value="@(searchInput.MaxPrice > 0 ? searchInput.MaxPrice.ToString() : "")">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark w-100 rounded-pill py-2 fw-bold">Áp dụng</button>
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary w-100 rounded-pill py-2 mt-2">Xóa lọc</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h4 class="fw-bold mb-0">Tất cả sản phẩm <span class="badge bg-secondary rounded-pill ms-2 fs-6">@Model.RowCount</span></h4>
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle border-0" type="button" data-bs-toggle="dropdown">
+                        Sắp xếp: Mới nhất
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                        <li><a class="dropdown-item" href="#">Mới nhất</a></li>
+                        <li><a class="dropdown-item" href="#">Giá thấp đến cao</a></li>
+                        <li><a class="dropdown-item" href="#">Giá cao xuống thấp</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            @if (Model.DataItems.Count == 0)
+            {
+                <div class="text-center py-5">
+                    <i class="fa-solid fa-box-open text-muted mb-3" style="font-size: 4rem;"></i>
+                    <h5 class="text-muted">Không tìm thấy sản phẩm nào phù hợp.</h5>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 mb-5">
+                    @foreach (var p in Model.DataItems)
+                    {
+                        <div class="col" data-aos="fade-up">
+                            <div class="card h-100 shadow-sm border-0 product-card rounded-4 overflow-hidden">
+
+                                <div class="position-relative">
+
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@p.ProductID" class="text-center d-block">
+                                        @{
+                                            // Lấy tên ảnh từ DB nếu có, không có thì mặc định lấy Test.png
+                                            var productImage = string.IsNullOrWhiteSpace(p.Photo)
+                                            ? Url.Content("~/images/products/Test.png")
+                                            : Url.Content($"~/images/products/{p.Photo}");
+                                        }
+                                        <img src="@productImage"
+                                             class="card-img-top w-100"
+                                             style="height: 220px; object-fit: cover;"
+                                             alt="@p.ProductName"
+                                             onerror="this.onerror=null; this.src='@Url.Content("~/images/products/Test.png")';">
+                                    </a>
+
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="add-to-cart-form position-absolute bottom-0 end-0 m-3" style="z-index: 2;">
+                                        <input type="hidden" name="productId" value="@p.ProductID" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-warning rounded-circle shadow add-cart-btn" style="width: 45px; height: 45px;">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                                <div class="card-body d-flex flex-column pt-3">
+                                    <h6 class="card-title fw-bold text-truncate mb-2" title="@p.ProductName">
+                                        <a asp-controller="Product" asp-action="Details" asp-route-id="@p.ProductID" class="text-decoration-none text-dark">@p.ProductName</a>
+                                    </h6>
+                                    <p class="text-muted small mb-2 text-truncate">@p.ProductDescription</p>
+                                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                                        <span class="fs-5 fw-bold text-danger">@p.Price.ToString("N0") đ</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.PageCount > 1)
+                {
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            @for (int p = 1; p <= Model.PageCount; p++)
+                            {
+                                if (p == Model.Page)
+                                {
+                                    <li class="page-item active"><a class="page-link bg-warning text-dark border-warning fw-bold" href="#">@p</a></li>
+                                }
+                                else
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link text-dark"
+                                           href="~/Product?page=@p&searchValue=@searchInput.SearchValue&categoryId=@searchInput.CategoryID&minPrice=@searchInput.MinPrice&maxPrice=@searchInput.MaxPrice">
+                                            @p
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+
+    .add-cart-btn {
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.3s ease;
+    }
+
+    .product-card:hover .add-cart-btn {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>

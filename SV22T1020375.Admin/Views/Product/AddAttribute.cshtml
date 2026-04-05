@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Thêm thuộc tính";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Thêm thuộc tính sản phẩm
+                </h3>
+            </div>
+
+            <form method="post">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tên thuộc tính</label>
+                        <input type="text"
+                               name="AttributeName"
+                               class="form-control"
+                               placeholder="VD: Màu sắc"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Giá trị</label>
+                        <input type="text"
+                               name="AttributeValue"
+                               class="form-control"
+                               placeholder="VD: Đen">
+                    </div>
+                </div>
+
+                <div class="card-footer text-end">
+                    <button class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>
+                        Lưu
+                    </button>
+                    <a href="~/Product/ListAttribute/1"
+                       class="btn btn-secondary ms-2">
+                        Quay lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

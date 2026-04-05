@@ -1,0 +1,101 @@
+@{
+    ViewData["Title"] = "Thanh toán";
+    var cart = ViewBag.Cart as List<SV22T1020375.Shop.Models.CartItem>;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Cart" asp-action="Index" class="text-decoration-none text-muted">Giỏ hàng</a></li>
+            <li class="breadcrumb-item active fw-bold" style="color: var(--primary-color);" aria-current="page">Thanh toán</li>
+        </ol>
+    </nav>
+
+    <h2 class="fw-bold mb-4">Thông tin thanh toán</h2>
+
+    <div class="row">
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-sm border-0 rounded-4" data-aos="fade-right">
+                <div class="card-body p-4 p-md-5">
+                    <h5 class="fw-bold mb-4">Địa chỉ giao hàng</h5>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger mb-0" })
+                        </div>
+                    }
+
+                    <form asp-controller="Order" asp-action="InitCheckout" method="post">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Họ tên người nhận <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control bg-light" value="@User.Identity?.Name" readonly>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Tỉnh thành <span class="text-danger">*</span></label>
+                            <input type="text" name="deliveryProvince" class="form-control bg-light" required placeholder="Ví dụ: Thừa Thiên Huế">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Địa chỉ chi tiết <span class="text-danger">*</span></label>
+                            <textarea name="deliveryAddress" class="form-control bg-light" rows="3" required placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100 py-3 rounded-pill fw-bold fs-6 text-dark shadow-sm mt-2">
+                            Xác nhận đặt hàng
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5" data-aos="fade-left">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Đơn hàng của bạn</h5>
+                    
+                    <div class="mb-4" style="max-height: 350px; overflow-y: auto;">
+                        @if (cart != null)
+                        {
+                            foreach (var item in cart)
+                            {
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="position-relative me-3">
+                                        <img src="@Configuration["WebSiteUrl"]/images/products/@item.Photo" class="img-fluid rounded border p-1 bg-white" alt="@item.ProductName" style="width: 65px; height: 65px; object-fit: cover;">
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                                            @item.Quantity
+                                        </span>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 fw-bold text-truncate" style="max-width: 180px;">@item.ProductName</h6>
+                                        <p class="text-muted small mb-0">@item.SalePrice.ToString("N0") đ</p>
+                                    </div>
+                                    <div class="fw-bold text-danger text-end ml-auto">
+                                        @item.TotalPrice.ToString("N0") đ
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Tổng phụ</span>
+                            <span class="fw-bold">@(cart?.Sum(x => x.TotalPrice).ToString("N0") ?? "0") đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                            <span class="text-muted">Phí vận chuyển</span>
+                            <span class="fw-bold text-success">Miễn phí</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="fs-5 fw-bold">Tổng thanh toán</span>
+                            <span class="fs-4 fw-bold text-danger">@(cart?.Sum(x => x.TotalPrice).ToString("N0") ?? "0") đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

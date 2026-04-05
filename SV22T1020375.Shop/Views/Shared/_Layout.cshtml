@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LiteMart</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+        }
+
+        .footer-heading {
+            color: #f5a623;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .footer-link {
+            color: #adb5bd;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+
+            .footer-link:hover {
+                color: #fff;
+            }
+
+        .hover-effect:hover {
+            color: #f5a623 !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+            <div class="container">
+                <a class="navbar-brand fw-bold fs-4" href="/">
+                    <i class="fa fa-shopping-bag text-warning me-2"></i>LiteMart
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link active" href="/">Trang chủ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/">Sản phẩm</a></li>
+                        
+                    </ul>
+
+                    <div class="d-flex align-items-center">
+                        <a href="/Product/ShoppingCart" class="text-light text-decoration-none me-4 hover-effect position-relative">
+                            <i class="fa fa-shopping-cart fs-5"></i> Giỏ hàng
+                            <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.75rem;">0</span>
+                        </a>
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <div class="dropdown">
+                                <a class="text-light text-decoration-none dropdown-toggle d-flex align-items-center hover-effect" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-2" style="width: 32px; height: 32px; border: 2px solid white;">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    <span class="fw-bold">@User.Identity.Name</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2 border-0" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item py-2" href="/Account/Profile"><i class="fa fa-id-card me-2 text-primary"></i>Hồ sơ cá nhân</a></li>
+                                    <li><a class="dropdown-item py-2" href="/Order"><i class="fa fa-box me-2 text-success"></i>Đơn mua</a></li>
+                                    <li><a class="dropdown-item py-2" href="/Account/ChangePassword"><i class="fa fa-key me-2 text-warning"></i>Đổi mật khẩu</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item py-2 text-danger fw-bold" href="/Account/Logout"><i class="fa fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a href="/Account/Login" class="btn btn-outline-light btn-sm me-2 rounded-pill px-3 fw-bold">Đăng nhập</a>
+                            <a href="/Account/Register" class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark">Đăng ký</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-4" style="min-height: 60vh;">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-dark text-light pt-5 pb-3 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="footer-heading"><i class="fa fa-shopping-bag me-2"></i> Về LiteMart</h5>
+                    <p class="text-muted small">LiteMart là sàn thương mại điện tử hàng đầu, mang đến cho bạn trải nghiệm mua sắm tuyệt vời, hàng chính hãng 100% và dịch vụ giao hàng siêu tốc.</p>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="footer-heading">Chăm sóc khách hàng</h5>
+                    <a href="#" class="footer-link small">Trung tâm trợ giúp</a>
+                    <a href="#" class="footer-link small">Hướng dẫn mua hàng</a>
+                    <a href="#" class="footer-link small">Chính sách đổi trả</a>
+                    <a href="#" class="footer-link small">Chính sách bảo hành</a>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="footer-heading">Thanh toán & Vận chuyển</h5>
+                    <div class="mb-3">
+                        <i class="fa-brands fa-cc-visa fs-3 me-2 text-muted"></i>
+                        <i class="fa-brands fa-cc-mastercard fs-3 me-2 text-muted"></i>
+                        <i class="fa-brands fa-cc-paypal fs-3 text-muted"></i>
+                    </div>
+                    <p class="text-muted small">Hợp tác với các đơn vị vận chuyển uy tín hàng đầu Việt Nam: GHTK, Viettel Post, J&T Express.</p>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 class="footer-heading">Kết nối với chúng tôi</h5>
+                    <div class="d-flex mb-3">
+                        <a href="#" class="text-light me-3 fs-4"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class="text-light me-3 fs-4"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" class="text-light fs-4"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                    <p class="text-muted small">Tải ứng dụng LiteMart trên điện thoại:</p>
+                    <div>
+                        <i class="fa-brands fa-google-play fs-4 me-3 text-muted"></i>
+                        <i class="fa-brands fa-apple fs-4 text-muted"></i>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center text-muted small">
+                &copy; 2026 Bản quyền thuộc về Công ty TNHH LiteMart Việt Nam.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $.get("/Product/GetCartCount", function (data) {
+                $("#cart-badge").text(data);
+            });
+        });
+
+        function addToCartApi(id) {
+            $.post("/Product/AddToCartApi", { productId: id }, function (data) {
+                $("#cart-badge").text(data);
+                alert("Đã thêm sản phẩm vào giỏ hàng!");
+            });
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

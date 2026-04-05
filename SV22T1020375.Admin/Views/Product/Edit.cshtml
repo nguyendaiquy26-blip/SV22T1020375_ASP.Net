@@ -1,0 +1,137 @@
+﻿@model SV22T1020375.Models.Catalog.Product
+@{
+}
+@section PageToolBar {
+    <button type="submit" form="formEdit" class="btn btn-primary">
+        <i class="bi bi-save"></i>
+        Lưu dữ liệu
+    </button>
+
+    <a href="~/Product" class="btn btn-secondary ms-1">
+        <i class="bi bi-arrow-left"></i>
+        Quay lại
+    </a>
+}
+
+<div class="row justify-content-center">
+    <div class="col-12">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-box-seam me-2"></i>
+                    Thông tin mặt hàng
+                </h5>
+            </div>
+
+            <div class="card-body">
+                <form id="formEdit" method="post" enctype="multipart/form-data" action="~/Product/SaveData">
+                    <input type="hidden" asp-for="ProductID" />
+                    <input type="hidden" asp-for="Photo" />
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Tên mặt hàng</label>
+                        <div class="col-sm-9">
+                            <input type="text"
+                                   class="form-control"
+                                   asp-for="ProductName"
+                                   placeholder="Nhập tên mặt hàng"
+                                   autofocus />
+                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Loại hàng</label>
+                        <div class="col-sm-3">
+                            <select class="form-select" asp-for="CategoryID" asp-items="ViewBag.Categories">
+                                <option value="">-- Chọn loại hàng --</option>
+                            </select>
+                            <span asp-validation-for="CategoryID" class="text-danger"></span>
+                        </div>
+
+                        <label class="col-sm-2 col-form-label text-end">Nhà cung cấp</label>
+                        <div class="col-sm-4">
+                            <select class="form-select" asp-for="SupplierID" asp-items="ViewBag.Suppliers">
+                                <option value="">-- Chọn nhà cung cấp --</option>
+                            </select>
+                            <span asp-validation-for="SupplierID" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Đơn vị tính</label>
+                        <div class="col-sm-3">
+                            <input type="text"
+                                   class="form-control"
+                                   asp-for="Unit"
+                                   placeholder="cái, hộp, kg..." />
+                            <span asp-validation-for="Unit" class="text-danger"></span>
+                        </div>
+
+                        <label class="col-sm-2 col-form-label text-end">Giá</label>
+                        <div class="col-sm-4">
+                            <input type="number"
+                                   class="form-control money-input"
+                                   asp-for="Price"
+                                   placeholder="Giá bán"
+                                   min="0" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Trạng thái</label>
+                        <div class="col-sm-9">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="IsSelling"
+                                       name="IsSelling"
+                                       value="true"
+                                       @(Model != null && Model.IsSelling ? "checked" : "") />
+                                <input type="hidden" name="IsSelling" value="false" />
+                                <label class="form-check-label" for="IsSelling">
+                                    Đang bán
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Ảnh</label>
+                        <div class="col-sm-9">
+                            <input type="file"
+                                   name="uploadPhoto"
+                                   class="form-control"
+                                   accept="image/*"
+                                   data-img-preview="imgPreview"
+                                   onchange="previewImage(this)" />
+                            <div class="mt-2">
+                                <img id="imgPreview"
+                                     src="~/images/products/@(string.IsNullOrEmpty(Model?.Photo) ? "nophoto.png" : Model.Photo)"
+                                     class="img-thumbnail"
+                                     style="max-height: 160px;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Mô tả</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control"
+                                      asp-for="ProductDescription"
+                                      rows="3"
+                                      placeholder="Nhập mô tả mặt hàng"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model != null && Model.ProductID > 0)
+{
+    await Html.RenderPartialAsync("ListPhotos");
+    await Html.RenderPartialAsync("ListAttributes");
+}

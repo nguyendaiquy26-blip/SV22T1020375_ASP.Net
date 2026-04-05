@@ -1,0 +1,57 @@
+﻿@using SV22T1020375.Admin
+@using SV22T1020375.Admin.Models
+@using SV22T1020375.Models.Catalog
+@using SV22T1020375.Models.Common
+@using SV22T1020375.Models.DataDictionary
+@using SV22T1020375.Models.HR
+@using SV22T1020375.Models.Partner
+@using SV22T1020375.Models.Sales
+@using SV22T1020375.Models.Security
+@{
+    var userData = User.GetUserData();
+
+    var displayName = userData?.DisplayName ?? "Nguyễn Đại Quý";
+
+    // CHÚ Ý SỬA ĐƯỜNG DẪN Ở ĐÂY: Trỏ đúng vào thư mục images/employees/
+    var photo = string.IsNullOrWhiteSpace(userData?.Photo)
+        ? Url.Content("~/images/products/nophoto.png")
+        : Url.Content("~/images/employees/" + userData.Photo);
+}
+
+<nav class="app-header navbar navbar-expand bg-body-secondary">
+    <div class="container-fluid">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                    <i class="bi bi-list"></i>
+                </a>
+            </li>
+            <li class="nav-item d-none d-md-block">
+                <a href="~/" class="nav-link">Trang chủ</a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item dropdown user-menu">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <img src="@photo" class="user-image rounded-circle shadow" alt="User Image" onerror="this.onerror=null;this.src='/images/products/nophoto.png';" />
+                    <span class="d-none d-md-inline">@displayName</span>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                    <li class="user-header text-bg-primary">
+                        <img src="@photo" class="rounded-circle shadow" alt="User Image" onerror="this.onerror=null;this.src='/images/products/nophoto.png';" />
+                        <p>@displayName</p>
+                    </li>
+
+                    <li class="user-footer">
+                        <a href="~/Account/ChangePassword" class="btn btn-default btn-flat">Đổi mật khẩu</a>
+                        <form method="post" action="~/Account/Logout" style="display:inline;">
+                            <button type="submit" class="btn btn-default btn-flat float-end">Thoát</button>
+                        </form>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>

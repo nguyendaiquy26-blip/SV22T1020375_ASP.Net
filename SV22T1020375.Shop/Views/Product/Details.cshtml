@@ -1,0 +1,42 @@
+@model SV22T1020375.Models.Catalog.Product
+@{
+    ViewData["Title"] = Model.ProductName;
+}
+
+<div class="container my-5 bg-white p-4 rounded shadow-sm border">
+    <div class="row">
+        <div class="col-md-5 text-center border-end">
+            @{
+                string imagePath = string.IsNullOrEmpty(Model.Photo) ? "/images/nophoto.png" : $"/images/products/{Model.Photo}";
+            }
+            <img src="@imagePath" class="img-fluid rounded" alt="@Model.ProductName" onerror="this.src='/images/nophoto.png'" style="max-height: 400px; object-fit: contain;">
+        </div>
+
+        <div class="col-md-7 ps-md-5 mt-4 mt-md-0">
+            <h3 class="fw-bold mb-3" style="color: #333;">@Model.ProductName</h3>
+
+            <div class="bg-light p-3 rounded mb-4">
+                <h2 class="fw-bold m-0" style="color: #ee4d2d;">@Model.Price.ToString("N0") ₫</h2>
+            </div>
+
+            <p class="text-muted mb-4" style="line-height: 1.8;">
+                @(string.IsNullOrEmpty(Model.ProductDescription) ? "Sản phẩm chưa có bài mô tả chi tiết." : Model.ProductDescription)
+            </p>
+
+            <hr />
+
+            <form action="/Product/AddToCart" method="post" class="mt-4">
+                <input type="hidden" name="productId" value="@Model.ProductID" />
+
+                <div class="d-flex align-items-center mb-4">
+                    <label class="me-3 fw-bold text-muted">Số lượng</label>
+                    <input type="number" name="quantity" class="form-control text-center" value="1" min="1" max="99" style="width: 100px; border-radius: 0;" />
+                </div>
+
+                <button type="submit" class="btn btn-lg px-5 shadow-sm" style="background-color: #ee4d2d; color: white; border-radius: 2px;">
+                    <i class="fa-solid fa-cart-plus me-2"></i> Thêm Vào Giỏ Hàng
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

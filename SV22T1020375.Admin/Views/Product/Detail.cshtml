@@ -1,0 +1,182 @@
+﻿@model SV22T1020375.Models.Catalog.Product
+@{
+    ViewBag.Title = "Chi tiết sản phẩm";
+}
+<style>
+    body {
+        background: #f4f6f9;
+    }
+
+    .card-custom {
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .card-header {
+        background: #ffffff;
+        border-bottom: 1px solid #eee;
+    }
+
+    .form-label {
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .price-text {
+        font-size: 18px;
+        color: #dc3545;
+        font-weight: 600;
+    }
+
+    .image-box {
+        height: 260px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .product-img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        transition: 0.3s;
+    }
+
+        .product-img:hover {
+            transform: scale(1.05);
+        }
+
+    .table th {
+        background: #f1f3f5;
+    }
+</style>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card card-custom mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-box-seam me-2"></i>
+                    Thông tin sản phẩm
+                </h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Tên sản phẩm</label>
+                        <div class="fw-semibold">@Model.ProductName</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Đơn vị tính</label>
+                        <div class="fw-semibold">@Model.Unit</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Nhà cung cấp</label>
+                        <div class="fw-semibold">@(Model.SupplierID?.ToString() ?? "")</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Loại hàng</label>
+                        <div class="fw-semibold">@(Model.CategoryID?.ToString() ?? "")</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Giá bán</label>
+                        <div class="price-text">@Model.Price.ToString("N0") VNĐ</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Trạng thái</label>
+                        <div class="fw-semibold">
+                            @if (Model.IsSelling)
+                            {
+                                <span class="badge bg-success">Đang bán</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Ngừng bán</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Mô tả sản phẩm</label>
+                        <div class="fw-semibold">
+                            @Model.ProductDescription
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer text-end bg-white">
+                <a href="~/Product/Edit/@Model.ProductID" class="btn btn-primary px-4">
+                    <i class="bi bi-pencil-square me-1"></i>
+                    Cập nhật
+                </a>
+
+                <a href="~/Product" class="btn btn-outline-secondary ms-2 px-4">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card card-custom mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-image me-2"></i>
+                    Hình ảnh
+                </h5>
+            </div>
+
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="image-box">
+                            <img src="@Url.Content(string.IsNullOrEmpty(Model.Photo) ? "~/images/products/nophoto.png" : $"~/images/products/{Model.Photo}")"
+                                 class="product-img"
+                                 alt="@Model.ProductName" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer text-center bg-white">
+                <a href="~/Product/ListPhoto/@Model.ProductID" class="btn btn-info px-4">
+                    <i class="bi bi-images me-1"></i>
+                    Quản lý ảnh
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card card-custom mt-3">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-list-check me-2"></i>
+            Thuộc tính sản phẩm
+        </h5>
+    </div>
+
+    <div class="card-body">
+        <div class="text-muted">
+            Thuộc tính chi tiết của sản phẩm được quản lý ở mục riêng.
+        </div>
+    </div>
+
+    <div class="card-footer text-end bg-white">
+        <a href="~/Product/ListAttribute/@Model.ProductID" class="btn btn-info px-4">
+            <i class="bi bi-list-check me-1"></i>
+            Quản lý thuộc tính
+        </a>
+    </div>
+</div>

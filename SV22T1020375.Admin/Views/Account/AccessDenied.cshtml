@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Không có quyền truy cập";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card card-danger card-outline shadow">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    Từ chối truy cập
+                </h3>
+            </div>
+
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 60px;"></i>
+                </div>
+
+                <h4 class="text-danger mb-3">Bạn không có quyền truy cập chức năng này</h4>
+
+                <p class="mb-2">
+                    Tài khoản của bạn đã đăng nhập thành công, nhưng không được cấp quyền để sử dụng trang hoặc chức năng này.
+                </p>
+
+                <p class="text-muted">
+                    Vui lòng liên hệ quản trị viên nếu bạn cho rằng đây là nhầm lẫn.
+                </p>
+            </div>
+
+            <div class="card-footer text-center">
+                <a href="/" class="btn btn-primary">
+                    <i class="bi bi-house-door-fill"></i> Về trang chủ
+                </a>
+
+                <a href="/Account/Login" class="btn btn-secondary">
+                    <i class="bi bi-box-arrow-in-right"></i> Về trang đăng nhập
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

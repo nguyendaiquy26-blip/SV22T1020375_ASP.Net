@@ -1,0 +1,163 @@
+﻿/* --- BIẾN MÀU SẮC CHỦ ĐẠO (E-COMMERCE THEME) --- */
+:root {
+    --primary-color: #0a58ca; /* Xanh dương thương mại, tạo sự tin tưởng */
+    --secondary-color: #fd7e14; /* Cam nổi bật cho giá tiền/nút mua */
+    --light-bg: #f4f5f7;
+    --text-main: #333333;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-main);
+    overflow-x: hidden;
+}
+
+/* --- THANH ĐIỀU HƯỚNG (NAVBAR) --- */
+.eco-nav {
+    background-color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    padding: 12px 0;
+}
+
+    .eco-nav .navbar-brand {
+        font-size: 1.8rem;
+        color: var(--primary-color) !important;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+
+    .eco-nav .nav-link {
+        color: #555 !important;
+        font-weight: 600;
+        margin: 0 8px;
+        font-size: 1rem;
+        transition: color 0.2s;
+    }
+
+        .eco-nav .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+.icon-badge {
+    position: relative;
+}
+
+    .icon-badge .badge {
+        position: absolute;
+        top: -5px;
+        right: -10px;
+        background-color: var(--secondary-color);
+        color: white;
+        border-radius: 50%;
+        font-size: 0.7rem;
+        padding: 3px 6px;
+    }
+
+/* --- NÚT BẤM (BUTTONS) --- */
+.btn-primary-eco {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+    .btn-primary-eco:hover {
+        background-color: #084298;
+        color: white;
+    }
+
+/* --- HIỆU ỨNG THẺ SẢN PHẨM --- */
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+        border-color: var(--primary-color);
+    }
+
+.product-img-wrapper {
+    overflow: hidden;
+    padding: 20px;
+    text-align: center;
+    background-color: #fff;
+}
+
+    .product-img-wrapper img {
+        height: 180px;
+        object-fit: contain;
+        transition: transform 0.4s ease;
+    }
+
+.product-card:hover .product-img-wrapper img {
+    transform: scale(1.08);
+}
+
+.product-price {
+    color: var(--secondary-color);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+<style >
+/* Bọc ảnh để ép nó thành hình vuông 1:1 giống Shopee */
+.img-square-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* Tỉ lệ 1:1 */
+    overflow: hidden;
+    background-color: #f8f9fa; /* Nền xám nhạt nếu ảnh bị trong suốt */
+}
+
+.img-square-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cắt ảnh lấp đầy khung */
+}
+/* Hiệu ứng thẻ sản phẩm */
+.shopee-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e1e1e1; /* Viền mỏng nhẹ */
+    border-radius: 4px; /* Bo góc cực nhẹ */
+    background: #fff;
+}
+
+    .shopee-card:hover {
+        transform: translateY(-2px); /* Nhấc nhẹ lên */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid #ee4d2d; /* Viền cam Shopee khi hover */
+        z-index: 1;
+    }
+/* Tên sản phẩm tối đa 2 dòng */
+.product-title {
+    font-size: 14px;
+    line-height: 18px;
+    height: 36px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    color: #212529;
+    text-decoration: none;
+}
+
+    .product-title:hover {
+        color: #ee4d2d; /* Đổi màu chữ khi trỏ vào tên */
+    }
+/* Giá màu đỏ cam */
+.shopee-price {
+    color: #ee4d2d;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+</style >

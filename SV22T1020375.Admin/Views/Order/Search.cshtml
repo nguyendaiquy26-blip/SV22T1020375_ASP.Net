@@ -1,0 +1,113 @@
+﻿@model SV22T1020375.Models.Common.PagedResult<SV22T1020375.Models.Sales.OrderViewInfo>
+@{
+    Layout = null;
+}
+
+<div class="mb-2 text-muted">
+    Có <strong>@Model.RowCount</strong> đơn hàng trong kết quả tìm kiếm
+</div>
+
+<div class="card">
+    <div class="card-body p-1">
+        <table class="table table-bordered table-hover mb-0 align-middle">
+            <thead class="table-secondary">
+                <tr>
+                    <th style="width:110px;">Mã đơn</th>
+                    <th style="width:160px;">Thời gian lập</th>
+                    <th>Khách hàng</th>
+                    <th style="width:140px;">Điện thoại</th>
+                    <th style="width:180px;">Nhân viên phụ trách</th>
+                    <th style="width:150px;" class="text-center">Trạng thái</th>
+                    <th style="width:100px;" class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.DataItems == null || !Model.DataItems.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            Không tìm thấy đơn hàng nào
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model.DataItems)
+                    {
+                        <tr>
+                            <td>@item.OrderID</td>
+                            <td>@item.OrderTime.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <strong>@item.CustomerName</strong><br />
+                                <small class="text-muted">@item.DeliveryAddress</small>
+                            </td>
+                            <td>@item.CustomerPhone</td>
+                            <td>@item.EmployeeName</td>
+                            <td class="text-center">
+                                @switch (item.Status)
+                                {
+                                    case SV22T1020375.Models.Sales.OrderStatusEnum.New:
+                                        <span class="badge bg-secondary">Đơn hàng vừa tạo</span>
+                                        break;
+                                    case SV22T1020375.Models.Sales.OrderStatusEnum.Accepted:
+                                        <span class="badge bg-primary">Đơn hàng đã được duyệt</span>
+                                        break;
+                                    case SV22T1020375.Models.Sales.OrderStatusEnum.Shipping:
+                                        <span class="badge bg-warning text-dark">Đang vận chuyển</span>
+                                        break;
+                                    case SV22T1020375.Models.Sales.OrderStatusEnum.Completed:
+                                        <span class="badge bg-success">Đã hoàn tất</span>
+                                        break;
+                                    case SV22T1020375.Models.Sales.OrderStatusEnum.Cancelled:
+                                        <span class="badge bg-dark">Đã hủy</span>
+                                        break;
+                                    case SV22T1020375.Models.Sales.OrderStatusEnum.Rejected:
+                                        <span class="badge bg-danger">Bị từ chối</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-light text-dark">Không xác định</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-center text-nowrap">
+                                <a href="~/Order/Detail/@item.OrderID" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer">
+        <ul class="pagination justify-content-center mb-0">
+            @foreach (var p in Model.GetDisplayPages())
+            {
+                if (p.IsCurrent)
+                {
+                    <li class="page-item active">
+                        <a class="page-link">@p.Page</a>
+                    </li>
+                }
+                else if (p.IsEllipsis)
+                {
+                    <li class="page-item">
+                        <a class="page-link">....</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="javascript:;"
+                           onclick="paginationSearch(null, document.getElementById('formSearch'), @p.Page)">
+                            @p.Page
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>

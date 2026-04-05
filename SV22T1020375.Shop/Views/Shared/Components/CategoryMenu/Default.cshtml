@@ -1,0 +1,12 @@
+@model IEnumerable<SV22T1020375.Models.Catalog.Category>
+
+<ul class="dropdown-menu border-0 shadow-sm" aria-labelledby="categoryDropdown">
+    @foreach(var item in Model)
+    {
+        <li>
+            <a class="dropdown-item py-2" href="/Product?categoryId=@item.CategoryID">
+                @item.CategoryName
+            </a>
+        </li>
+    }
+</ul>

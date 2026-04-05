@@ -1,0 +1,84 @@
+@model SV22T1020375.Models.Partner.Customer
+
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 rounded-4" data-aos="fade-up">
+                <div class="card-body p-5">
+                    <h3 class="text-center mb-4 fw-bold" style="color: var(--primary-color);">Tạo tài khoản mới</h3>
+
+                    <form asp-controller="Account" asp-action="Register" method="post">
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                @Html.ValidationSummary(false, "", new { @class = "text-danger mb-0" })
+                            </div>
+                        }
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Họ và Tên (*)</label>
+                                <input type="text" asp-for="CustomerName" class="form-control bg-light" placeholder="Nguyễn Văn A" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Tên giao dịch (*)</label>
+                                <input type="text" asp-for="ContactName" class="form-control bg-light" placeholder="Tên thường gọi" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">Email (*)</label>
+                            <input type="email" asp-for="Email" class="form-control bg-light" placeholder="email@example.com" required>
+                            <small class="text-muted">Dùng làm tên đăng nhập</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Mật khẩu (*)</label>
+                                <input type="password" name="password" class="form-control bg-light" placeholder="Tối thiểu 6 ký tự" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Xác nhận mật khẩu (*)</label>
+                                <input type="password" name="confirmPassword" class="form-control bg-light" placeholder="Nhập lại mật khẩu" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Tỉnh thành (*)</label>
+                                <select class="form-select bg-light" asp-for="Province" required>
+                                    <option value="">-- Chọn Tỉnh/Thành --</option>
+                                    @foreach (var item in SV22T1020375.BusinessLayers.CommonDataService.ListOfProvinces())
+                                    {
+                                        <option value="@item.ProvinceName">@item.ProvinceName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted">Điện thoại (*)</label>
+                                <input type="text" asp-for="Phone" class="form-control bg-light" placeholder="Số điện thoại liên hệ" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted">Địa chỉ (*)</label>
+                            <input type="text" asp-for="Address" class="form-control bg-light" placeholder="Số nhà, Tên đường, Quận/Huyện..." required>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100 py-2 fw-bold text-dark rounded-pill mb-3">
+                            Đăng ký
+                        </button>
+                        <div class="text-center text-muted">
+                            Đã có tài khoản? <a asp-controller="Account" asp-action="Login" class="text-decoration-none fw-bold" style="color: var(--primary-color);">Đăng nhập ngay</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

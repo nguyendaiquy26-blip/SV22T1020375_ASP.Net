@@ -1,0 +1,93 @@
+@using SV22T1020375.Models.Sales
+@model IEnumerable<SV22T1020375.Models.Sales.OrderViewInfo>
+
+@{
+    ViewData["Title"] = "Lịch sử mua hàng";
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Account" asp-action="Profile" class="text-decoration-none text-muted">Hồ sơ cá nhân</a></li>
+            <li class="breadcrumb-item active fw-bold" style="color: var(--primary-color);" aria-current="page">Lịch sử mua hàng</li>
+        </ol>
+    </nav>
+
+    <h2 class="fw-bold mb-4">Lịch sử đơn hàng của bạn</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 border rounded-4 bg-light shadow-sm" data-aos="zoom-in">
+            <i class="fa-solid fa-box-open mb-3" style="font-size: 5rem; color: #ddd;"></i>
+            <h4 class="text-muted fw-bold">Chưa có đơn hàng nào</h4>
+            <p class="text-muted mb-4">Bạn chưa thực hiện giao dịch nào trên LiteMart.</p>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-warning px-4 py-2 fw-bold text-dark rounded-pill">
+                <i class="fa-solid fa-bag-shopping me-2"></i> Mua sắm ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 rounded-4" data-aos="fade-up">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 py-3 text-muted">Mã ĐH</th>
+                                <th class="py-3 text-muted">Ngày đặt</th>
+                                <th class="py-3 text-muted">Trạng thái</th>
+                                <th class="py-3 text-muted">Tỉnh/thành</th>
+                                <th class="py-3 text-muted">Địa chỉ nhận</th>
+                                <th class="text-end pe-4 py-3 text-muted">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 py-3 fw-bold">#@item.OrderID</td>
+                                    <td class="py-3">@item.OrderTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="py-3">
+                                        @if (item.Status == OrderStatusEnum.New)
+                                        {
+                                            <span class="badge bg-primary rounded-pill">Chờ duyệt</span>
+                                        }
+                                        else if (item.Status == OrderStatusEnum.Accepted)
+                                        {
+                                            <span class="badge bg-info rounded-pill">Đã duyệt</span>
+                                        }
+                                        else if (item.Status == OrderStatusEnum.Shipping)
+                                        {
+                                            <span class="badge bg-warning text-dark rounded-pill">Đang giao hàng</span>
+                                        }
+                                        else if (item.Status == OrderStatusEnum.Completed)
+                                        {
+                                            <span class="badge bg-success rounded-pill">Hoàn tất</span>
+                                        }
+                                        else if (item.Status == OrderStatusEnum.Cancelled)
+                                        {
+                                            <span class="badge bg-danger rounded-pill">Đã hủy</span>
+                                        }
+                                        else if (item.Status == OrderStatusEnum.Rejected)
+                                        {
+                                            <span class="badge bg-secondary rounded-pill">Bị từ chối</span>
+                                        }
+                                    </td>
+                                    <td class="py-3">@item.DeliveryProvince</td>
+                                    <td class="py-3 text-truncate" style="max-width: 200px;" title="@item.DeliveryAddress">@item.DeliveryAddress</td>
+                                    <td class="text-end pe-4 py-3">
+                                        <a asp-controller="Order" asp-action="Details" asp-route-id="@item.OrderID" class="btn btn-sm btn-outline-dark rounded-pill shadow-sm">
+                                            Xem chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

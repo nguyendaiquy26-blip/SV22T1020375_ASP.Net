@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Cổng thanh toán VNPay";
+}
+
+<div class="container text-center mt-5">
+    <div class="card shadow-lg mx-auto" style="max-width: 500px;">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Cổng thanh toán điện tử VNPay</h4>
+        </div>
+        <div class="card-body py-5">
+            <img src="https://vnpay.vn/assets/images/logo-icon/logo-primary.svg" alt="VNPay Logo" width="150" class="mb-4" />
+
+            <h5 class="text-secondary">Vui lòng quét mã QR trên ứng dụng ngân hàng</h5>
+
+            <div class="border p-3 d-inline-block mb-4" style="background: #f8f9fa;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" width="200" alt="Mã QR" />
+            </div>
+
+            <p class="text-muted">Đang chờ bạn thực hiện thanh toán...</p>
+
+            <a href="~/Product/CreateOrder" class="btn btn-success btn-lg w-100 mt-3">
+                <i class="fa fa-check-circle"></i> Xác nhận chuyển khoản thành công
+            </a>
+
+            <a href="~/Product/Checkout" class="btn btn-outline-danger mt-3">
+                Hủy thanh toán
+            </a>
+        </div>
+    </div>
+</div>
