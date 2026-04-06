@@ -16,5 +16,10 @@ namespace SV22T1020375.DataLayers.Interfaces
         /// Đăng ký khách hàng mới có mật khẩu
         /// </summary>
         Task<int> RegisterAsync(Customer data, string password);
+
+        /// <summary>
+        /// Đổi mật khẩu khách hàng
+        /// </summary>
+        Task<bool> ChangePasswordAsync(int customerID, string password);
     }
 }

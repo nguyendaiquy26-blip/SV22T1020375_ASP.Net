@@ -1,122 +1,79 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SV22T1020375.Admin;
+﻿using Microsoft.AspNetCore.Mvc;
+using SV22T1020375.BusinessLayers;
 using SV22T1020375.Models.Common;
-using SV22T1020375.Models.Partner;
+using SV22T1020375.Models.Partner; // Gọi namespace chứa ChangeCustomerPasswordViewModel
 
-
-namespace SV22T1020645.Admin.Controllers
-{   ///<summary>
-    /// Tên biến session lưu điều kiện tìm kiếm khách hàng
-    //private const string CUSTO
-    /// </summary>
-    [Authorize(Roles = WebUserRoles.Sales + "," + WebUserRoles.Administrator)]
-    //[Authorize]
+namespace SV22T1020375.Admin.Controllers
+{
     public class CustomerController : Controller
     {
-
-        //private const int PAGE_SIZE = 10;
-
-        /// <summary>
-        /// Giao diện để nhập đầu vào tìm kiếm và hiển thị kết quả tìm kiếm
-        /// </summary>
-        /// <returns></returns>
+        // 1. GỌI TRANG CHỦ & THANH TÌM KIẾM
         public IActionResult Index()
         {
-            var input = ApplicationContext.GetSessionData<PaginationSearchInput>("CustomerSearchInput");
-            if (input == null)
-                input = new PaginationSearchInput()
-                {
-                    Page = 1,
-                    PageSize = ApplicationContext.PageSize,
-                    SearchValue = "",
-                };
+            var input = new PaginationSearchInput()
+            {
+                Page = 1,
+                PageSize = 20,
+                SearchValue = ""
+            };
             return View(input);
         }
 
-        /// <summary>
-        /// TÌm kiếm khách hàng và trả về kq dưới dạng phân trang
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public async Task<IActionResult> Search(PaginationSearchInput input)
+        // 2. TÌM KIẾM DỮ LIỆU
+        public async Task<IActionResult> Search(PaginationSearchInput condition)
         {
-            //Lấy trang và giá trị tìm kiếm
-            if (input.Page < 1)
-                input.Page = 1;
-
-            if (input.PageSize <= 0)
-                input.PageSize = ApplicationContext.PageSize;
-
-            input.SearchValue ??= "";
-
-            //Gọi xuống ListCustomerAsync (BusinessLayers)
-            var result = await PartnerDataService.ListCustomersAsync(input);
-            ApplicationContext.SetSessionData("CustomerSearchInput", input);
-
-            return PartialView(result);
+            // Sử dụng đúng tên hàm ListCustomersAsync
+            var data = await PartnerDataService.ListCustomersAsync(condition);
+            return View(data);
         }
 
-        /// <summary>
-        /// Bổ sung khách hàng mới
-        /// </summary>
-        /// <returns></returns>
+        // 3. THÊM MỚI KHÁCH HÀNG (Dùng chung Edit.cshtml)
         public IActionResult Create()
         {
-            ViewBag.Title = "Bổ sung Khách hàng";
+            ViewBag.Title = "Bổ sung khách hàng mới";
             var model = new Customer()
             {
-                CustomerID = 0
+                CustomerID = 0,
+                IsLocked = false
             };
             return View("Edit", model);
         }
 
-        /// <summary>
-        /// Cập nhật thông tin khách hàng
-        /// </summary>
-        /// <param name="id">Mã khách hàng cần cập nhật</param>
-        /// <returns></returns>
-        public async Task<IActionResult> Edit(int id)
+        // 4. CẬP NHẬT KHÁCH HÀNG (Mở Edit.cshtml)
+        public async Task<IActionResult> Edit(int id = 0)
         {
-            ViewBag.Title = "Cập nhật thông tin Khách hàng";
+            ViewBag.Title = "Cập nhật thông tin khách hàng";
+            // Sử dụng đúng tên hàm GetCustomerAsync
             var model = await PartnerDataService.GetCustomerAsync(id);
+
             if (model == null)
                 return RedirectToAction("Index");
+
             return View(model);
         }
 
+        // 5. LƯU DỮ LIỆU TỪ FILE EDIT.CSHTML
         [HttpPost]
         public async Task<IActionResult> SaveData(Customer data)
         {
-            ViewBag.Title = data.CustomerID == 0 ? "Bổ sung khách hàng" : "Cập nhật thông tin khách hàng";
+            // Tránh lỗi null reference
+            data.CustomerName = string.IsNullOrWhiteSpace(data.CustomerName) ? "" : data.CustomerName;
+            data.ContactName = string.IsNullOrWhiteSpace(data.ContactName) ? "" : data.ContactName;
+            data.Phone = string.IsNullOrWhiteSpace(data.Phone) ? "" : data.Phone;
+            data.Email = string.IsNullOrWhiteSpace(data.Email) ? "" : data.Email;
+            data.Address = string.IsNullOrWhiteSpace(data.Address) ? "" : data.Address;
+            data.Province = string.IsNullOrWhiteSpace(data.Province) ? "" : data.Province;
 
-            //TODO : Kiểm tra tính hợp lệ của dữ liệu và thông báo lỗi nếu dl không hợp lệ
-
-            //sử dụng ModeState để kiểm soát thông báo lỗi và gửi thông báo lỗi cho view
             if (string.IsNullOrWhiteSpace(data.CustomerName))
-                ModelState.AddModelError(nameof(data.CustomerName), "Vui lòng nhập tên của khách hàng");
-            if (string.IsNullOrWhiteSpace(data.Email))
-                ModelState.AddModelError(nameof(data.Email), "Vui lòng cho biết Email của khách hàng");
-            else if (!(await PartnerDataService.ValidatelCustomerEmailAsync(data.Email, data.CustomerID)))
-                ModelState.AddModelError(nameof(data.Email), "Email này đã được sử dụng");
-
-            // tinh thanh
-            if (string.IsNullOrWhiteSpace(data.Province))
-                ModelState.AddModelError(nameof(data.Province), "Vui lòng nhập tỉnh/thành");
-
-            // cac ô có thể để tróng thì :
-            //điều chỉnh lại các giá trị dữ liệu khác theo quy định/quy ước của app
-            if (string.IsNullOrEmpty(data.ContactName)) data.ContactName = "";
-            if (string.IsNullOrEmpty(data.Phone)) data.Phone = "";
-            if (string.IsNullOrEmpty(data.Address)) data.Address = "";
-
+                ModelState.AddModelError(nameof(data.CustomerName), "Tên khách hàng không được để trống");
 
             if (!ModelState.IsValid)
             {
+                ViewBag.Title = data.CustomerID == 0 ? "Bổ sung khách hàng" : "Cập nhật thông tin khách hàng";
                 return View("Edit", data);
             }
 
-            // Yêu cầu DL vào csdl
+            // Sử dụng đúng các hàm AddCustomerAsync và UpdateCustomerAsync
             if (data.CustomerID == 0)
             {
                 await PartnerDataService.AddCustomerAsync(data);
@@ -125,23 +82,12 @@ namespace SV22T1020645.Admin.Controllers
             {
                 await PartnerDataService.UpdateCustomerAsync(data);
             }
+
             return RedirectToAction("Index");
         }
 
-        // Catch (Exception ex)
-        // {
-
-        // Lưu log lỗi trong ex
-        //   ModelState.AddModelError("Erro");
-        // }
-
-        /// <summary>
-        /// Xóa khách hàng
-        /// </summary>
-        /// <param name="id">Mã khách hàng cần xóa</param>
-        /// <returns></returns>
-        public async Task<IActionResult> Delete(int id)
-
+        // 6. XÓA KHÁCH HÀNG
+        public async Task<IActionResult> Delete(int id = 0)
         {
             if (Request.Method == "POST")
             {
@@ -153,22 +99,69 @@ namespace SV22T1020645.Admin.Controllers
             if (model == null)
                 return RedirectToAction("Index");
 
-            //
-            ViewBag.AllowDelete = !(await PartnerDataService.IsUsedCustomerAsync(id));
+            // Sử dụng đúng hàm IsUsedCustomerAsync để kiểm tra trước khi xóa
+            ViewBag.AllowDelete = !await PartnerDataService.IsUsedCustomerAsync(id);
 
             return View(model);
         }
 
-        /// <summary>
-        /// Đổi mật khẩu khách hàng
-        /// </summary>
-        /// <param name="id">Mã khách hàng cần đổi mật khẩu</param>
-        /// <returns></returns>
-        public IActionResult ChangePassword(int id)
+        // 7. ĐỔI MẬT KHẨU
+        [HttpGet]
+        public async Task<IActionResult> ChangePassword(int id)
         {
-            ViewBag.Title = "Đổi mật khẩu Khách hàng";
-            return View();
+            var customer = await PartnerDataService.GetCustomerAsync(id);
+            if (customer == null)
+                return RedirectToAction("Index");
+
+            // Khởi tạo Model gửi sang ChangePassword.cshtml
+            var model = new ChangeCustomerPasswordViewModel()
+            {
+                CustomerID = customer.CustomerID,
+                CustomerName = customer.CustomerName ?? "",
+                Email = customer.Email ?? "",
+                IsLocked = customer.IsLocked ?? false
+            };
+
+            return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangeCustomerPasswordViewModel model)
+        {
+            // Kiểm tra mật khẩu xác nhận có khớp không
+            if (model.NewPassword != model.ConfirmPassword)
+            {
+                ModelState.AddModelError(nameof(model.ConfirmPassword), "Mật khẩu xác nhận không khớp.");
+                return View(model);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Gọi đúng hàm ChangeCustomerPasswordAsync
+            await PartnerDataService.ChangeCustomerPasswordAsync(model.CustomerID, model.NewPassword);
+
+            return RedirectToAction("Index");
+        }
+    }
+}
+
+// ======================================================================
+// THỦ THUẬT: Đặt class này ở ngay cuối file CustomerController.cs 
+// để đáp ứng yêu cầu của file ChangePassword.cshtml mà KHÔNG cần tạo file mới
+// ======================================================================
+namespace SV22T1020375.Models.Partner
+{
+    public class ChangeCustomerPasswordViewModel
+    {
+        public int CustomerID { get; set; }
+        public string CustomerName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public bool IsLocked { get; set; }
+
+        public string NewPassword { get; set; } = "";
+        public string ConfirmPassword { get; set; } = "";
     }
 }

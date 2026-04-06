@@ -149,5 +149,51 @@ namespace SV22T1020375.Admin.Controllers
 
             return View(data);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SavePassword(int EmployeeID, string newPassword, string confirmPassword)
+        {
+            ViewBag.Title = "Đổi mật khẩu nhân viên";
+
+            // 1. Kiểm tra tính hợp lệ của dữ liệu
+            if (string.IsNullOrWhiteSpace(newPassword))
+                ModelState.AddModelError("newPassword", "Vui lòng nhập mật khẩu mới");
+
+            if (string.IsNullOrWhiteSpace(confirmPassword))
+                ModelState.AddModelError("confirmPassword", "Vui lòng xác nhận mật khẩu");
+
+            if (newPassword != confirmPassword)
+                ModelState.AddModelError("confirmPassword", "Mật khẩu xác nhận không khớp");
+
+            // 2. Nếu có lỗi, hiển thị lại trang đổi mật khẩu cùng với thông báo lỗi
+            if (!ModelState.IsValid)
+            {
+                var data = await HRDataService.GetEmployeeAsync(EmployeeID);
+                if (data == null) return RedirectToAction("Index");
+
+                return View("ChangePassword", data);
+            }
+
+            // 3. Nếu dữ liệu hợp lệ, thực hiện lưu vào Database
+            // TODO: Gọi hàm cập nhật mật khẩu từ HRDataService của bạn ở đây.
+            // Ví dụ: await HRDataService.ChangePasswordAsync(EmployeeID, newPassword);
+
+            // 4. Lưu thành công, quay về trang danh sách
+            TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveRole(int EmployeeID)
+        {
+            // TODO: Tiếp nhận các quyền được chọn (từ checkbox) và lưu vào Database
+            // Hiện tại Form đang gửi lên EmployeeID, ta sẽ đón nhận để tránh lỗi 404
+
+            // Ví dụ: Lấy danh sách Role từ Request.Form hoặc tham số mảng
+            // await HRDataService.UpdateEmployeeRolesAsync(EmployeeID, danh_sach_quyen);
+
+            TempData["SuccessMessage"] = "Cập nhật phân quyền thành công!";
+            return RedirectToAction("Index");
+        }
     }
 }

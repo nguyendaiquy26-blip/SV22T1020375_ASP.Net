@@ -15,6 +15,7 @@ namespace SV22T1020375.DataLayers.SQLServer
             _connectionString = connectionString ?? "";
         }
 
+        #region IGenericRepository<Customer> implementation
         public async Task<int> AddAsync(Customer data)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -71,7 +72,6 @@ namespace SV22T1020375.DataLayers.SQLServer
         {
             using var connection = new SqlConnection(_connectionString);
             int offset = (input.Page - 1) * input.PageSize;
-
             string countSql = @"SELECT COUNT(*) FROM Customers WHERE CustomerName LIKE @search";
             string dataSql = @"SELECT CustomerID, CustomerName, ContactName,
                                       Province, Address, Phone, Email, IsLocked
@@ -80,17 +80,14 @@ namespace SV22T1020375.DataLayers.SQLServer
                                ORDER BY CustomerName
                                OFFSET @offset ROWS
                                FETCH NEXT @pagesize ROWS ONLY";
-
             var parameters = new
             {
                 search = $"%{input.SearchValue ?? ""}%",
                 offset,
                 pagesize = input.PageSize
             };
-
             int count = await connection.ExecuteScalarAsync<int>(countSql, parameters);
             var data = await connection.QueryAsync<Customer>(dataSql, parameters);
-
             return new PagedResult<Customer>()
             {
                 Page = input.Page,
@@ -99,15 +96,15 @@ namespace SV22T1020375.DataLayers.SQLServer
                 DataItems = data.ToList()
             };
         }
+        #endregion
 
+        #region ICustomerRepository specific methods
         public async Task<bool> ValidateEmailAsync(string email, int id = 0)
         {
             using var connection = new SqlConnection(_connectionString);
-            string sql;
-            if (id == 0)
-                sql = @"SELECT COUNT(*) FROM Customers WHERE Email = @email";
-            else
-                sql = @"SELECT COUNT(*) FROM Customers WHERE Email = @email AND CustomerID <> @id";
+            string sql = id == 0
+                ? @"SELECT COUNT(*) FROM Customers WHERE Email = @email"
+                : @"SELECT COUNT(*) FROM Customers WHERE Email = @email AND CustomerID <> @id";
 
             int count = await connection.ExecuteScalarAsync<int>(sql, new { email, id });
             return count == 0;
@@ -132,8 +129,19 @@ namespace SV22T1020375.DataLayers.SQLServer
                 Email = data.Email ?? "",
                 Password = password ?? ""
             };
-
             return await connection.ExecuteScalarAsync<int>(sql, parameters);
         }
+
+        public async Task<bool> ChangePasswordAsync(int customerID, string password)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            string sql = @"UPDATE Customers
+                           SET Password = @Password
+                           WHERE CustomerID = @CustomerID";
+
+            int rowsAffected = await connection.ExecuteAsync(sql, new { CustomerID = customerID, Password = password });
+            return rowsAffected > 0;
+        }
+        #endregion
     }
 }

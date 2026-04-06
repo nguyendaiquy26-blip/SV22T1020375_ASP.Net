@@ -23,7 +23,7 @@
             <div class="row g-2">
                 <div class="col-md-3">
                     <label class="form-label">Trạng thái đơn hàng</label>
-                    <select asp-for="Status" class="form-select">
+                    <select asp-for="Status" class="form-select" onchange="paginationSearch(event, this.form, 1)">
                         <option value="0">-- Tất cả --</option>
                         <option value="1">Đơn hàng vừa tạo</option>
                         <option value="2">Đơn hàng đã được duyệt</option>
@@ -40,12 +40,14 @@
                         <input type="text"
                                class="form-control date-picker"
                                asp-for="DateFrom"
-                               placeholder="Từ ngày..." />
+                               placeholder="Từ ngày..."
+                               onchange="paginationSearch(event, this.form, 1)" />
                         <span class="input-group-text">-</span>
                         <input type="text"
                                class="form-control date-picker"
                                asp-for="DateTo"
-                               placeholder="...đến ngày" />
+                               placeholder="...đến ngày"
+                               onchange="paginationSearch(event, this.form, 1)" />
                     </div>
                 </div>
 
@@ -72,7 +74,7 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            paginationSearch(null, document.getElementById("formSearch"), @Model.Page);
+            paginationSearch(new Event('submit'), document.getElementById("formSearch"), @Model.Page);
         });
     </script>
 }

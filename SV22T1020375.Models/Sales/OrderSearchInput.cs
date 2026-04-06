@@ -1,4 +1,5 @@
 ﻿using SV22T1020375.Models.Common;
+using System;
 
 namespace SV22T1020375.Models.Sales
 {
@@ -8,16 +9,18 @@ namespace SV22T1020375.Models.Sales
     public class OrderSearchInput : PaginationSearchInput
     {
         /// <summary>
-        /// Trạng thái đơn hàng
+        /// Trạng thái đơn hàng (ĐÃ SỬA THÀNH Kiểu int)
         /// </summary>
-        public OrderStatusEnum Status { get; set; }
+        public int Status { get; set; } = 0;
+
         /// <summary>
-        /// Từ ngày (ngày lập đơn hàng)
+        /// Từ ngày (ngày lập đơn hàng) - Dùng string để tránh lỗi Model Binding
         /// </summary>
-        public DateTime? DateFrom { get; set; }
+        public string DateFrom { get; set; } = "";
+
         /// <summary>
-        /// Đến ngày (ngày lập đơn hàng)
+        /// Đến ngày (ngày lập đơn hàng) - Dùng string để tránh lỗi Model Binding
         /// </summary>
-        public DateTime? DateTo { get; set; }
+        public string DateTo { get; set; } = "";
     }
 }

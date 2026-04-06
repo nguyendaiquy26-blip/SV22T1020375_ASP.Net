@@ -1,4 +1,8 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using SV22T1020375.DataLayers.Interfaces;
 using SV22T1020375.Models.Common;
@@ -23,35 +27,72 @@ namespace SV22T1020375.DataLayers.SQLServer
         }
 
         /// <summary>
-        /// Tìm kiếm và lấy danh sách đơn hàng dưới dạng phân trang
+        /// Tìm kiếm và lấy danh sách đơn hàng dưới dạng phân trang (Hoàn chỉnh)
         /// </summary>
-        /// <param name="input">Thông tin tìm kiếm</param>
-        /// <returns>Danh sách đơn hàng</returns>
         public async Task<PagedResult<OrderViewInfo>> ListAsync(OrderSearchInput input)
         {
             using var connection = new SqlConnection(_connectionString);
 
+            // 1. Tiền xử lý dữ liệu truyền vào
+            string keyword = "%" + (input.SearchValue ?? "") + "%";
+            int status = input.Status;
+
+            DateTime? fromTime = null;
+            DateTime? toTime = null;
+
+            if (!string.IsNullOrWhiteSpace(input.DateFrom))
+            {
+                if (DateTime.TryParseExact(input.DateFrom, "d/M/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime d))
+                    fromTime = d;
+                else if (DateTime.TryParse(input.DateFrom, out DateTime d2))
+                    fromTime = d2;
+            }
+
+            if (!string.IsNullOrWhiteSpace(input.DateTo))
+            {
+                if (DateTime.TryParseExact(input.DateTo, "d/M/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime d))
+                    toTime = d.AddDays(1).AddTicks(-1);
+                else if (DateTime.TryParse(input.DateTo, out DateTime d2))
+                    toTime = d2.AddDays(1).AddTicks(-1);
+            }
+
+            // Đóng gói các tham số
             var parameters = new
             {
-                keyword = "%" + input.SearchValue + "%",
+                keyword = keyword,
+                status = status,
+                fromTime = fromTime,
+                toTime = toTime,
                 offset = (input.Page - 1) * input.PageSize,
                 pagesize = input.PageSize
             };
 
-            int rowCount = await connection.ExecuteScalarAsync<int>(
-                @"SELECT COUNT(*)
-                  FROM Orders o
-                  LEFT JOIN Customers c ON o.CustomerID = c.CustomerID
-                  WHERE c.CustomerName LIKE @keyword", parameters);
+            // 2. Viết câu lệnh đếm tổng số dòng
+            string sqlCount = @"
+                SELECT COUNT(*)
+                FROM Orders o
+                LEFT JOIN Customers c ON o.CustomerID = c.CustomerID
+                WHERE (@status = 0 OR o.Status = @status) 
+                  AND (c.CustomerName LIKE @keyword OR o.DeliveryAddress LIKE @keyword)
+                  AND (@fromTime IS NULL OR o.OrderTime >= @fromTime)
+                  AND (@toTime IS NULL OR o.OrderTime <= @toTime)";
 
-            var data = await connection.QueryAsync<OrderViewInfo>(
-                @"SELECT o.*, c.CustomerName
-                  FROM Orders o
-                  LEFT JOIN Customers c ON o.CustomerID = c.CustomerID
-                  WHERE c.CustomerName LIKE @keyword
-                  ORDER BY o.OrderTime DESC
-                  OFFSET @offset ROWS
-                  FETCH NEXT @pagesize ROWS ONLY", parameters);
+            int rowCount = await connection.ExecuteScalarAsync<int>(sqlCount, parameters);
+
+            // 3. Viết câu lệnh lấy dữ liệu phân trang
+            string sqlSelect = @"
+                SELECT o.*, c.CustomerName
+                FROM Orders o
+                LEFT JOIN Customers c ON o.CustomerID = c.CustomerID
+                WHERE (@status = 0 OR o.Status = @status)
+                  AND (c.CustomerName LIKE @keyword OR o.DeliveryAddress LIKE @keyword)
+                  AND (@fromTime IS NULL OR o.OrderTime >= @fromTime)
+                  AND (@toTime IS NULL OR o.OrderTime <= @toTime)
+                ORDER BY o.OrderTime DESC
+                OFFSET @offset ROWS
+                FETCH NEXT @pagesize ROWS ONLY";
+
+            var data = await connection.QueryAsync<OrderViewInfo>(sqlSelect, parameters);
 
             return new PagedResult<OrderViewInfo>()
             {
@@ -65,8 +106,6 @@ namespace SV22T1020375.DataLayers.SQLServer
         /// <summary>
         /// Lấy thông tin chi tiết của một đơn hàng
         /// </summary>
-        /// <param name="orderID">Mã đơn hàng</param>
-        /// <returns>Thông tin đơn hàng</returns>
         public async Task<OrderViewInfo?> GetAsync(int orderID)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -82,8 +121,6 @@ namespace SV22T1020375.DataLayers.SQLServer
         /// <summary>
         /// Bổ sung đơn hàng mới
         /// </summary>
-        /// <param name="data">Thông tin đơn hàng</param>
-        /// <returns>Mã đơn hàng vừa tạo</returns>
         public async Task<int> AddAsync(Order data)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -104,8 +141,6 @@ namespace SV22T1020375.DataLayers.SQLServer
         /// <summary>
         /// Cập nhật thông tin đơn hàng
         /// </summary>
-        /// <param name="data">Thông tin đơn hàng cần cập nhật</param>
-        /// <returns>true nếu cập nhật thành công</returns>
         public async Task<bool> UpdateAsync(Order data)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -130,8 +165,6 @@ namespace SV22T1020375.DataLayers.SQLServer
         /// <summary>
         /// Xóa đơn hàng
         /// </summary>
-        /// <param name="orderID">Mã đơn hàng</param>
-        /// <returns>true nếu xóa thành công</returns>
         public async Task<bool> DeleteAsync(int orderID)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -147,8 +180,6 @@ namespace SV22T1020375.DataLayers.SQLServer
         /// <summary>
         /// Lấy danh sách mặt hàng trong đơn hàng
         /// </summary>
-        /// <param name="orderID">Mã đơn hàng</param>
-        /// <returns>Danh sách mặt hàng</returns>
         public async Task<List<OrderDetailViewInfo>> ListDetailsAsync(int orderID)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -166,9 +197,6 @@ namespace SV22T1020375.DataLayers.SQLServer
         /// <summary>
         /// Lấy thông tin chi tiết của một mặt hàng trong đơn hàng
         /// </summary>
-        /// <param name="orderID">Mã đơn hàng</param>
-        /// <param name="productID">Mã mặt hàng</param>
-        /// <returns>Thông tin chi tiết mặt hàng</returns>
         public async Task<OrderDetailViewInfo?> GetDetailAsync(int orderID, int productID)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -184,8 +212,6 @@ namespace SV22T1020375.DataLayers.SQLServer
         /// <summary>
         /// Bổ sung mặt hàng vào đơn hàng
         /// </summary>
-        /// <param name="data">Thông tin mặt hàng</param>
-        /// <returns>true nếu thêm thành công</returns>
         public async Task<bool> AddDetailAsync(OrderDetail data)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -200,8 +226,6 @@ namespace SV22T1020375.DataLayers.SQLServer
         /// <summary>
         /// Cập nhật số lượng và giá bán của một mặt hàng trong đơn hàng
         /// </summary>
-        /// <param name="data">Thông tin mặt hàng</param>
-        /// <returns>true nếu cập nhật thành công</returns>
         public async Task<bool> UpdateDetailAsync(OrderDetail data)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -219,9 +243,6 @@ namespace SV22T1020375.DataLayers.SQLServer
         /// <summary>
         /// Xóa một mặt hàng khỏi đơn hàng
         /// </summary>
-        /// <param name="orderID">Mã đơn hàng</param>
-        /// <param name="productID">Mã mặt hàng</param>
-        /// <returns>true nếu xóa thành công</returns>
         public async Task<bool> DeleteDetailAsync(int orderID, int productID)
         {
             using var connection = new SqlConnection(_connectionString);

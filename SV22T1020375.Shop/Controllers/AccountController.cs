@@ -48,7 +48,12 @@ namespace SV22T1020375.Shop.Controllers
                 return View();
             }
 
-            var userAccount = await UserAccountService.AuthorizeAsync(username, password);
+            // [ĐÃ SỬA]: Mã hóa mật khẩu người dùng nhập vào
+            string hashedPassword = GetMd5Hash(password);
+
+            // [ĐÃ SỬA]: Truyền hashedPassword vào AuthorizeAsync thay vì password gốc
+            var userAccount = await UserAccountService.AuthorizeAsync(username, hashedPassword);
+
             if (userAccount == null)
             {
                 ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng");
@@ -125,8 +130,8 @@ namespace SV22T1020375.Shop.Controllers
                 }
 
                 // 4. ĐĂNG KÝ XONG TỰ ĐỘNG ĐĂNG NHẬP
-                // Lưu ý: Vẫn truyền 'password' gốc vào AuthorizeAsync vì hàm này tự băm mật khẩu khi so sánh với DB
-                var userAccount = await UserAccountService.AuthorizeAsync(data.Email, password);
+                // [ĐÃ SỬA]: Truyền hashedPassword thay vì password gốc
+                var userAccount = await UserAccountService.AuthorizeAsync(data.Email, hashedPassword);
 
                 if (userAccount != null)
                 {
@@ -233,15 +238,13 @@ namespace SV22T1020375.Shop.Controllers
 
             string userName = User.FindFirstValue(ClaimTypes.Email) ?? "";
 
-            // LƯU Ý VỀ ĐỔI MẬT KHẨU:
-            // Tùy thuộc vào hàm ChangePasswordAsync của bạn bên UserAccountService.
-            // Nếu hàm đó chưa tự động mã hóa mật khẩu, bạn cần dùng GetMd5Hash() ở đây:
-            // string hashedOld = GetMd5Hash(oldPassword);
-            // string hashedNew = GetMd5Hash(newPassword);
-            // bool result = await UserAccountService.ChangePasswordAsync(userName, hashedOld, hashedNew);
+            // [ĐÃ SỬA]: Mở khóa và sử dụng MD5 để mã hóa mật khẩu cũ và mới
+            string hashedOld = GetMd5Hash(oldPassword);
+            string hashedNew = GetMd5Hash(newPassword);
 
-            // Tạm thời giữ nguyên code gốc của bạn, nếu chức năng đổi mật khẩu bị lỗi, hãy áp dụng cách mở comment phía trên nhé!
-            bool result = await UserAccountService.ChangePasswordAsync(userName, oldPassword, newPassword);
+            // [ĐÃ SỬA]: Truyền mật khẩu đã mã hóa vào hàm đổi mật khẩu
+            bool result = await UserAccountService.ChangePasswordAsync(userName, hashedOld, hashedNew);
+
             if (!result)
             {
                 ModelState.AddModelError("oldPassword", "Mật khẩu hiện tại không đúng");
