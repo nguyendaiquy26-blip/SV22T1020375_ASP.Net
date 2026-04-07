@@ -9,15 +9,34 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <style>
+        /* CSS TOÀN CỤC - ĐỔI SANG TÔNG SÁNG */
         body {
-            background-color: #f8f9fa;
+            background-color: #fdfdfd; /* Nền trắng ngọc trai dịu mắt */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #495057;
         }
 
+        /* NAVBAR SÁNG VÀ TINH TẾ */
         .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,.03); /* Viền bóng mờ siêu mịn */
+            border-bottom: 1px solid rgba(0,0,0,.03);
+        }
+        
+        .navbar-light .navbar-nav .nav-link {
+            color: #555 !important; /* Màu chữ nav xám đậm */
+            font-weight: 500;
+        }
+        
+        .navbar-light .navbar-nav .nav-link:hover,
+        .navbar-light .navbar-nav .nav-link.active {
+            color: #0d6efd !important; /* Màu xanh khi hover */
+        }
+        
+        .hover-effect:hover {
+            color: #0d6efd !important;
         }
 
+        /* FOOTER ĐỔI SANG TÔNG SÁNG */
         .footer-heading {
             color: #f5a623;
             font-weight: bold;
@@ -27,27 +46,24 @@
         }
 
         .footer-link {
-            color: #adb5bd;
+            color: #6c757d;
             text-decoration: none;
             display: block;
             margin-bottom: 10px;
-            transition: color 0.3s;
+            transition: all 0.3s;
         }
 
-            .footer-link:hover {
-                color: #fff;
-            }
-
-        .hover-effect:hover {
-            color: #f5a623 !important;
+        .footer-link:hover {
+            color: #f5a623;
+            padding-left: 5px; /* Hiệu ứng dịch chuyển nhẹ khi hover */
         }
     </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
             <div class="container">
-                <a class="navbar-brand fw-bold fs-4" href="/">
+                <a class="navbar-brand fw-bold fs-4 text-dark" href="/">
                     <i class="fa fa-shopping-bag text-warning me-2"></i>LiteMart
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -57,11 +73,10 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item"><a class="nav-link active" href="/">Trang chủ</a></li>
                         <li class="nav-item"><a class="nav-link" href="/">Sản phẩm</a></li>
-                        
                     </ul>
 
                     <div class="d-flex align-items-center">
-                        <a href="/Product/ShoppingCart" class="text-light text-decoration-none me-4 hover-effect position-relative">
+                        <a href="/Product/ShoppingCart" class="text-dark text-decoration-none me-4 hover-effect position-relative">
                             <i class="fa fa-shopping-cart fs-5"></i> Giỏ hàng
                             <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.75rem;">0</span>
                         </a>
@@ -69,13 +84,13 @@
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             <div class="dropdown">
-                                <a class="text-light text-decoration-none dropdown-toggle d-flex align-items-center hover-effect" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-2" style="width: 32px; height: 32px; border: 2px solid white;">
+                                <a class="text-dark text-decoration-none dropdown-toggle d-flex align-items-center hover-effect" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-2" style="width: 32px; height: 32px; border: 2px solid #eee;">
                                         <i class="fa fa-user"></i>
                                     </div>
-                                    <span class="fw-bold">@User.Identity.Name</span>
+                                    <span class="fw-semibold">@User.Identity.Name</span>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2 border-0" aria-labelledby="userDropdown">
+                                <ul class="dropdown-menu dropdown-menu-end shadow mt-2 border-0" aria-labelledby="userDropdown">
                                     <li><a class="dropdown-item py-2" href="/Account/Profile"><i class="fa fa-id-card me-2 text-primary"></i>Hồ sơ cá nhân</a></li>
                                     <li><a class="dropdown-item py-2" href="/Order"><i class="fa fa-box me-2 text-success"></i>Đơn mua</a></li>
                                     <li><a class="dropdown-item py-2" href="/Account/ChangePassword"><i class="fa fa-key me-2 text-warning"></i>Đổi mật khẩu</a></li>
@@ -86,7 +101,7 @@
                         }
                         else
                         {
-                            <a href="/Account/Login" class="btn btn-outline-light btn-sm me-2 rounded-pill px-3 fw-bold">Đăng nhập</a>
+                            <a href="/Account/Login" class="btn btn-outline-primary btn-sm me-2 rounded-pill px-3 fw-bold">Đăng nhập</a>
                             <a href="/Account/Register" class="btn btn-warning btn-sm rounded-pill px-3 fw-bold text-dark">Đăng ký</a>
                         }
                     </div>
@@ -99,7 +114,7 @@
         @RenderBody()
     </main>
 
-    <footer class="bg-dark text-light pt-5 pb-3 mt-5">
+    <footer class="bg-light pt-5 pb-3 mt-5 border-top">
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-6 mb-4">
@@ -115,24 +130,24 @@
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5 class="footer-heading">Thanh toán & Vận chuyển</h5>
-                    <div class="mb-3">
-                        <i class="fa-brands fa-cc-visa fs-3 me-2 text-muted"></i>
-                        <i class="fa-brands fa-cc-mastercard fs-3 me-2 text-muted"></i>
-                        <i class="fa-brands fa-cc-paypal fs-3 text-muted"></i>
+                    <div class="mb-3 payment-icons">
+                        <i class="fa-brands fa-cc-visa fs-3 me-2 text-secondary"></i>
+                        <i class="fa-brands fa-cc-mastercard fs-3 me-2 text-secondary"></i>
+                        <i class="fa-brands fa-cc-paypal fs-3 text-secondary"></i>
                     </div>
                     <p class="text-muted small">Hợp tác với các đơn vị vận chuyển uy tín hàng đầu Việt Nam: GHTK, Viettel Post, J&T Express.</p>
                 </div>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h5 class="footer-heading">Kết nối với chúng tôi</h5>
                     <div class="d-flex mb-3">
-                        <a href="#" class="text-light me-3 fs-4"><i class="fa-brands fa-facebook"></i></a>
-                        <a href="#" class="text-light me-3 fs-4"><i class="fa-brands fa-youtube"></i></a>
-                        <a href="#" class="text-light fs-4"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="text-secondary me-3 fs-4"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class="text-secondary me-3 fs-4"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" class="text-secondary fs-4"><i class="fa-brands fa-instagram"></i></a>
                     </div>
                     <p class="text-muted small">Tải ứng dụng LiteMart trên điện thoại:</p>
                     <div>
-                        <i class="fa-brands fa-google-play fs-4 me-3 text-muted"></i>
-                        <i class="fa-brands fa-apple fs-4 text-muted"></i>
+                        <i class="fa-brands fa-google-play fs-4 me-3 text-secondary"></i>
+                        <i class="fa-brands fa-apple fs-4 text-secondary"></i>
                     </div>
                 </div>
             </div>
@@ -141,7 +156,7 @@
                 &copy; 2026 Bản quyền thuộc về Công ty TNHH LiteMart Việt Nam.
             </div>
         </div>
-    </footer>
+    </footer payment-icons>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

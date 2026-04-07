@@ -11,7 +11,15 @@
     </a>
 }
 
-<div class="card mb-3">
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <strong>Thành công!</strong> @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<div class="card mb-3 shadow-sm border-0">
     <div class="card-body">
         <form id="formSearch"
               method="get"
@@ -59,8 +67,8 @@
                                asp-for="SearchValue"
                                placeholder="Tên mặt hàng..."
                                autofocus />
-                        <button type="submit" class="btn btn-info d-flex align-items-center">
-                            <i class="bi bi-search me-1"></i>
+                        <button type="submit" class="btn btn-info d-flex align-items-center text-white">
+                            <i class="bi bi-search me-1"></i> Tìm kiếm
                         </button>
                     </div>
                 </div>
@@ -74,6 +82,7 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Load dữ liệu bảng ngay khi vào trang
             paginationSearch(null, document.getElementById("formSearch"), @Model.Page);
         });
     </script>

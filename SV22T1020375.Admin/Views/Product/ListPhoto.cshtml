@@ -1,53 +1,58 @@
-﻿@{
-    ViewBag.Title = "Hình ảnh sản phẩm";
-}
+﻿@model IEnumerable<SV22T1020375.Models.Catalog.ProductPhoto>
 
-<div class="card mb-3">
+<div class="card mb-4 border-success">
+    <div class="card-header bg-success text-white">
+        <h5 class="card-title mb-0"><i class="bi bi-images me-2"></i> Thư viện ảnh</h5>
+    </div>
     <div class="card-body">
-        <form method="post" enctype="multipart/form-data">
-            <div class="input-group">
-                <input type="file"
-                       name="photo"
-                       class="form-control">
-
-                <button class="btn btn-primary">
-                    <i class="bi bi-upload"></i>
-                    Tải ảnh
-                </button>
-
-                <a href="~/Product"
-                   class="btn btn-secondary ms-2">
-                    Quay lại
-                </a>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-3">
-        <div class="card">
-            <img src="https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6504/6504816_sd.jpg"
-                 class="card-img-top">
-            <div class="card-body text-center">
-                <a href="#" class="btn btn-sm btn-danger">
-                    <i class="bi bi-trash"></i>
-                    Xóa
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card">
-            <img src="https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6504/6504812_sd.jpg"
-                 class="card-img-top">
-            <div class="card-body text-center">
-                <a href="#" class="btn btn-sm btn-danger">
-                    <i class="bi bi-trash"></i>
-                    Xóa
-                </a>
-            </div>
+        <a href="~/Product/CreatePhoto/@ViewBag.ProductID" class="btn btn-success mb-3">
+            <i class="bi bi-plus-circle"></i> Thêm ảnh mới
+        </a>
+        <div class="table-responsive p-0">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center" style="width:120px">Ảnh</th>
+                        <th>Mô tả</th>
+                        <th class="text-center">Thứ tự</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center" style="width:120px">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <img src="~/images/products/@(string.IsNullOrEmpty(item.Photo) ? "nophoto.png" : item.Photo)" style="max-height: 80px; max-width: 100px" class="img-thumbnail" />
+                                </td>
+                                <td>@item.Description</td>
+                                <td class="text-center">@item.DisplayOrder</td>
+                                <td class="text-center">
+                                    @if (item.IsHidden)
+                                    {
+                                        <span class="badge bg-secondary">Đang ẩn</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Hiển thị</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a href="~/Product/EditPhoto/@ViewBag.ProductID?photoId=@item.PhotoID" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square"></i></a>
+                                    <a href="~/Product/DeletePhoto/@ViewBag.ProductID?photoId=@item.PhotoID" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa ảnh này?')"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="5" class="text-center text-muted py-3">Chưa có ảnh nào.</td></tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
